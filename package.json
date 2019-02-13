@@ -1,0 +1,22 @@
+{
+  "name": "webrtc-server",
+  "version": "1.0.0",
+  "description": "WebRTC signal server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index",
+    "start": "node index"
+  },
+  "author": "Raiza Rhamdan",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "morgan": "^1.9.1",
+    "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.10"
+  }
+}
