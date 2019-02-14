@@ -7,7 +7,7 @@ router.get('/', (req, res, next) => {
     "message": "server siap digunakan",
     "timestamp": req.requestTime
   });
-  next();
+  // next();
 });
 
 module.exports = router;
