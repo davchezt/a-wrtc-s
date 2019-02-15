@@ -56,31 +56,19 @@ let clients = [],
     rooms   = [];
 io.on("connection", (socket) => {
   let initiator = socket.handshake.query.initiator;
+  let address = socket.handshake.address;
   const index = clients.findIndex(data => data['id'] === socket.id);
   if (index === -1) {
-    clients.push({ id: socket.id, initiator: initiator });
-    // console.log('clients:push', clients);
+    clients.push({ id: socket.id, address: address, initiator: initiator });
     io.emit("users", { users: clients });
   }
 
   socket.on("disconnect", () => {
-    // clients = [];
-    // Object.keys(io.sockets.sockets).forEach(function(id) {
-    //   clients.push({
-    //     id: id,
-    //     id_user: io.sockets.sockets[id].userId
-    //   });
-    // });
-    // // Out Room
-    // Object.keys(in_room).forEach(function(id) {
-    //   if (in_room[id] == socket.userId) in_room.splice(id, 1);
-    //   io.sockets.in(rooms[id]).emit('out-room', { room: in_room, userId: socket.userId });
-    // });
     const index = clients.findIndex(data => data['id'] === socket.id);
     if (index !== -1) {
       clients.splice(index, 1);
-      // console.log('clients:splice', clients);
     }
+    io.emit("disconnect", socket.id);
     io.emit("user", { user: clients, event: "offline" });
   });
 
@@ -157,7 +145,6 @@ io.on("connection", (socket) => {
     const index = clients.findIndex(data => data['id'] === socket.id);
     if (index !== -1) {
       clients.splice(index, 1);
-      // console.log('clients:splice', clients);
     }
     socket.leave(room);
   });
@@ -189,14 +176,14 @@ app.use((error, req, res, next) => {
 });
 
 http.listen(port, ip, () => {
-  console.log('\x1b[43m\x1b[30m%s\x1b[0m', 'server berjalan di:');
+  console.log('\x1b[43m\x1b[30m%s\x1b[0m', 'SignalingServer berjalan di:');
   const ifaces = os.networkInterfaces();
   Object.keys(ifaces).forEach(function (ifname) {
     let alias = 0;
     ifaces[ifname].forEach(function (iface) {
       if ('IPv4' !== iface.family || iface.internal !== false) {
         // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
-        console.log('\x1b[36m', '\t' + ifname + ':' + alias + ' @ ' + iface.address + ':' + port, '\x1b[0m');
+        // console.log('\x1b[36m', '\t' + ifname + ':' + alias + ' @ ' + iface.address + ':' + port, '\x1b[0m');
         return;
       }
       if (alias >= 1) {
