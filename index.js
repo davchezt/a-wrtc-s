@@ -4,7 +4,8 @@ const express     = require("express"),
       io          = require("socket.io")(http),
       morgan      = require("morgan"),
       bodyParser  = require("body-parser"),
-      os          = require('os');
+      os          = require('os'),
+      path        = require('path');
 
 Date.prototype.toUnixTime = function() {
   return (this.getTime() / 1000) | 0;
@@ -15,8 +16,8 @@ Date.time = function() {
 
 const indexControllers = require('./controller');
 
-const ip = "0.0.0.0";
-const port = 8080;
+const ip = process.env.IP || "0.0.0.0";
+const port = process.env.PORT || 8080;
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -32,10 +33,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(morgan('combined', {
-  skip: (req, res, next) => { return res.statusCode < 400 }
-}));
-
 // Middleware
 const requestMiddleware = (req, res, next) => {
   req.requestTime = Date.now();
@@ -44,7 +41,11 @@ const requestMiddleware = (req, res, next) => {
 }
 
 app.use(requestMiddleware);
-app.use("/share", express.static("share"));
+app.use(morgan('combined', {
+  skip: (req, res, next) => { return res.statusCode < 400 }
+}));
+
+app.use("/download", express.static(path.resolve(__dirname, 'share')));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.set("json spaces", 2); // pretty print
